@@ -2,6 +2,7 @@ add_executable(
     unit_tests
     example_add.cpp
     example_subtract.cpp
+    example_memcpy_cpu_cycles.cpp
     )
 
 target_link_libraries(
