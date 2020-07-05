@@ -125,6 +125,78 @@ std::string wled_tests[] = {
 // }
 
 // Read tests from files
+int tests_run_tdd_get_cases(string tests_file, vector<string> &tests)
+{
+  int ret = -1;
+
+  const char *tst_help = " wled tests all ";
+  cout << tst_help << endl;
+
+  string tst_cmd = "cd ../tdd/tools/tests/wled; ";
+  tst_cmd = tst_cmd + "tdd_t_maint_v8 ";
+
+  // TODO: FIXME, to add tests from config file
+  // Declaring vector of string type for tests
+//   vector<string> tests;
+  int tests_num = 0;
+
+  ifstream input;
+//   string tests_file = "../tdd/tools/tests/wled/wled_tests.sh";
+  system("pwd");
+  input.open(tests_file);
+  if (input.fail()) {
+    cout << "Error: no tests file existing!(" << tests_file << ")" << endl;
+    // return ret;
+  } else {    
+    string line_str;
+    string token;
+
+    // Initialize vector with string using push_back
+    while (getline(input, line_str)) {
+      int line_comment_flag = 0;
+      stringstream in_line(line_str);
+      int token_num = 0;
+      while (in_line >> token) {
+        //   cout << " here is a test: " << token << endl;
+        // Check comment or test, #
+        char test_flag = token.at(0);
+        //   cout << "test flag: " << test_flag << endl;
+        if (test_flag == '#' && token_num == 0) {
+          line_comment_flag = 1;
+          break;
+        }
+        cout << " here is a test: " << token << endl;
+        tests.push_back(token);
+        token_num++;
+        tests_num++;
+        // only handle 1st token
+        break;
+      }
+      if (line_comment_flag == 1) {
+        continue; // skip the line with
+      }
+
+    }  // line_str
+  }
+
+  cout << "### There are " << tests_num << " total tests." << endl;
+  // run tests
+  for (int i = 0; i < tests.size(); i++) {
+    // Convert string to const char * for system call
+    string start_cmd = tst_cmd;
+    start_cmd += tests[i].c_str();
+    const char *command = start_cmd.c_str();
+    cout << "cmd: " << command << endl;
+    // ret = system(command);
+    // cout << "ret: " << ret << endl;
+  }
+
+  // generate cpp test file for 
+
+  return ret;
+}
+
+// Read tests from files
 int tests_run_tdd_wled_all()
 {
   int ret = -1;
@@ -136,48 +208,66 @@ int tests_run_tdd_wled_all()
   tst_cmd = tst_cmd + "tdd_t_maint_v8 ";
 
   // TODO: FIXME, to add tests from config file
-
   // Declaring vector of string type for tests
+  vector<string> tests;
+//   int tests_num = 0;
 
   ifstream input;
-  string tests_file = "../tdd/tools/tests/wled/wled_tests.txt";
+  string tests_file = "../tdd/tools/tests/wled/wled_tests.sh";
   system("pwd");
-  input.open(tests_file);
-  if (input.fail()) {    
-    cout << "Error: no tests file existing!(" << tests_file << ")" << endl;
-    // return ret;
-  } else {
-    vector<string> tests;
-    string token;
-    int tests_num = 0;
+  ret = tests_run_tdd_get_cases(tests_file, tests);
 
-    // Initialize vector with string using push_back
-    while (input >> token) {
-    //   cout << " here is a test: " << token << endl;
-      // Check comment or test, #
-      char test_flag = token.at(0);
-    //   cout << "test flag: " << test_flag << endl;
-      if (test_flag == '#') {
-          continue;
-      }
-      cout << " here is a test: " << token << endl;
-      tests.push_back(token);
-      tests_num++;
-    }
+//   input.open(tests_file);
+//   if (input.fail()) {
+//     cout << "Error: no tests file existing!(" << tests_file << ")" << endl;
+//     // return ret;
+//   } else {    
+//     string line_str;
+//     string token;
 
-    cout << "There are " << tests_num << " total tests." << endl;
+//     // Initialize vector with string using push_back
+//     while (getline(input, line_str)) {
+//       int line_comment_flag = 0;
+//       stringstream in_line(line_str);
+//       int token_num = 0;
+//       while (in_line >> token) {
+//         //   cout << " here is a test: " << token << endl;
+//         // Check comment or test, #
+//         char test_flag = token.at(0);
+//         //   cout << "test flag: " << test_flag << endl;
+//         if (test_flag == '#' && token_num == 0) {
+//           line_comment_flag = 1;
+//           break;
+//         }
+//         cout << " here is a test: " << token << endl;
+//         tests.push_back(token);
+//         token_num++;
+//         tests_num++;
+//         // only handle 1st token
+//         break;
+//       }
+//       if (line_comment_flag == 1) {
+//         continue; // skip the line with
+//       }
 
-    // run tests
-    for (int i = 0; i < tests.size(); i++) {
-      // Convert string to const char * for system call
-      string start_cmd = tst_cmd;
-      start_cmd += tests[i].c_str();
-      const char *command = start_cmd.c_str();
-      cout << "cmd: " << command << endl;
-      ret = system(command);
-      cout << "ret: " << ret << endl;
-    }
+//     }  // line_str
+//   }
+
+//   cout << "### There are " << tests_num << " total tests." << endl;
+
+  // run tests
+  for (int i = 0; i < tests.size(); i++) {
+    // Convert string to const char * for system call
+    string start_cmd = tst_cmd;
+    start_cmd += tests[i].c_str();
+    const char *command = start_cmd.c_str();
+    cout << "cmd: " << command << endl;
+    ret = system(command);
+    cout << "ret: " << ret << endl;
   }
+
+  // generate cpp test file for 
+
   return ret;
 }
 
