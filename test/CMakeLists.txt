@@ -4,6 +4,7 @@ add_executable(
     example_subtract.cpp
     example_memcpy_cpu_cycles.cpp
     example_run_tests.cpp
+    tests_wled.cpp
     )
 
 target_link_libraries(
